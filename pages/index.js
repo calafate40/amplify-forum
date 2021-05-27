@@ -1,16 +1,17 @@
 /* pages/index.js */
 import Head from "next/head";
 import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
 import { DotsVerticalIcon } from "@heroicons/react/solid";
 import { ViewGridAddIcon } from "@heroicons/react/solid";
-import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
 import { API } from "aws-amplify";
 import * as queries from "../src/graphql/queries";
 import * as mutations from "../src/graphql/mutations";
 import * as subscriptions from "../src/graphql/subscriptions";
+import Modal from "../src/components/modal";
+import NewTopicForm from "../src/components/newTopicForm";
 
 function Grid({ topics }) {
   return (
@@ -41,99 +42,6 @@ function Grid({ topics }) {
         ))}
       </ul>
     </div>
-  );
-}
-
-function Form({ formData, setFormData, handleSubmit, disableSubmit }) {
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-
-  return (
-    <div className="bg-white sm:rounded-lg">
-      <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg font-medium leading-6 text-gray-900">
-          新規トピック
-        </h3>
-        <div className="max-w-xl mt-2 text-sm text-gray-500">
-          <p>トピック名を入力してください。</p>
-        </div>
-        <form className="mt-5 sm:flex sm:items-center">
-          <div className="w-full sm:max-w-xs">
-            <label htmlFor="title" className="sr-only">
-              Title
-            </label>
-            <input
-              type="text"
-              name="title"
-              id="title"
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="タイトル"
-              value={formData.title}
-              onChange={handleChange}
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            type="button"
-            className={`disabled:opacity-50 inline-flex items-center justify-center w-full px-4 py-2 mt-3 font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm ${
-              disableSubmit && "cursor-not-allowed"
-            }`}
-          >
-            Create
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function Modal({ open, setOpen, children }) {
-  return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog
-        as="div"
-        static
-        className="fixed inset-0 z-10 overflow-y-auto"
-        open={open}
-        onClose={setOpen}
-      >
-        <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
-          </Transition.Child>
-
-          {/* This element is to trick the browser into centering the modal contents. */}
-          <span
-            className="hidden sm:inline-block sm:align-middle sm:h-screen"
-            aria-hidden="true"
-          >
-            &#8203;
-          </span>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enterTo="opacity-100 translate-y-0 sm:scale-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          >
-            <div className="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
-              {children}
-            </div>
-          </Transition.Child>
-        </div>
-      </Dialog>
-    </Transition.Root>
   );
 }
 
@@ -244,7 +152,7 @@ function Home() {
             </div>
           </div>
           <Modal open={open} setOpen={setOpen}>
-            <Form
+            <NewTopicForm
               formData={formData}
               setFormData={setFormData}
               disableSubmit={disableSubmit}
@@ -260,5 +168,4 @@ function Home() {
   );
 }
 
-// export default Home;
 export default withAuthenticator(Home);

@@ -127,6 +127,23 @@ function DeleteCommentButton({ comment }) {
   return <button onClick={deleteComment}>コメント削除</button>;
 }
 
+function DeleteTopicButton({ topic }) {
+  const router = useRouter();
+  async function deleteTopic() {
+    if (!confirm("ほんとに消す？")) {
+      return;
+    }
+    const deletedTopic = await API.graphql({
+      query: mutations.deleteTopic,
+      variables: { input: { id: topic.id } },
+    });
+    alert("トピックを消去しました。");
+    router.push("/");
+    console.log("deletedTipic = ", deletedTopic);
+  }
+  return <button onClick={deleteTopic}>トピック削除</button>;
+}
+
 function TopicPage() {
   const router = useRouter();
   const { id: topicId } = router.query;
@@ -238,6 +255,9 @@ function TopicPage() {
                 {!topic && "Loading..."}
                 {topic && topic.title}
               </p>
+              <span className="float-right bg-red">
+                <DeleteTopicButton topic={topic} />
+              </span>
             </div>
             {topic && (
               <>
